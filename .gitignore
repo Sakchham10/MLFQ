@@ -1,0 +1,21 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# JetBrains IDE
+.idea/
+
+# CMake build directories
+cmake-build-debug/
+cmake-build-release/
+cmake-build-*/
+build/
+out/
+
+# Compiled binaries
+*.o
+*.a
+*.so
+*.dylib
+*.exe
