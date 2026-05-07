@@ -13,7 +13,7 @@ MLFQ::MLFQ() {
   lastPriorityBoost = 0;
 }
 
-void MLFQ::enQueueProcess(Process *process) {
+void MLFQ::enQueueProcess(Process &process) {
   Queue firstQueue = queues.front();
   firstQueue.addToQueue(process);
 }
@@ -28,21 +28,21 @@ void MLFQ::run() {
 void MLFQ::downgradeProcess(int currentPriority, Process &process) {
   int finalQueue = queues.size();
   if (currentPriority == finalQueue) {
-    queues[currentPriority - 1].addToQueue(&process);
+    queues[currentPriority - 1].addToQueue(process);
   } else {
-    queues[currentPriority].addToQueue(&process);
+    queues[currentPriority].addToQueue(process);
   }
 }
 
 void MLFQ::completeProcess(Process &process) { storeStats(process); }
 
 void MLFQ::priorityBoost() {
-  std::vector<Process *> processes = std::vector<Process *>();
+  std::vector<Process> processes = std::vector<Process>();
   for (int i = 0; i < queues.size(); i++) {
     Queue currentQueue = queues[i];
-    std::deque<Process *> currentQueueProcesses = currentQueue.getProcesses();
+    std::deque<Process> currentQueueProcesses = currentQueue.getProcesses();
     for (int j = 0; j < currentQueueProcesses.size(); i++) {
-      Process *currentProcess = currentQueueProcesses[j];
+      Process currentProcess = currentQueueProcesses[j];
       processes.push_back(currentProcess);
     }
     currentQueue.resetQueue();

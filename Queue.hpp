@@ -5,22 +5,21 @@
 #include <queue>
 
 class Queue {
-  std::deque<Process *> processes;
+  std::deque<Process> processes;
   std::map<int, int> processToCpuTime;
   int timeSlice;
   int priority;
   int maxTimeInQueue;
-  void downgradeProcess(Process *process);
-  void completeProcess(Process *process);
-  void addToIoQueue(Process *process);
+  void downgradeProcess(Process &);
+  void completeProcess(Process &);
+  void addToIoQueue(Process &);
   void priorityBoost();
 
 public:
-  Queue(int timeSlice, int priority, int maxTimeInQueue);
-  void addToQueue(Process *process);
-  void runQueue(int &currentTime, int lastPriorityBoost,
-                int priorityBoostPeriod);
-  std::deque<Process *> getProcesses();
+  Queue(int, int, int);
+  void addToQueue(Process &);
+  void runQueue(int &, int &, const int);
+  std::deque<Process> getProcesses();
   void resetQueue();
 };
 

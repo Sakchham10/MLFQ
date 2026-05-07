@@ -16,7 +16,7 @@ class MLFQ {
 
 public:
   void run();
-  void enQueueProcess(Process *);
+  void enQueueProcess(Process &);
   void addQueue(Queue &);
   MLFQ();
 };
