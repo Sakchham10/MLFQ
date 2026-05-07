@@ -4,6 +4,8 @@
 #include "MLFQ.hpp"
 #include "Queue.hpp"
 
+void storeStats(Process &process) {}
+
 MLFQ::MLFQ() {
   queues = std::vector<Queue *>();
   currentTime = 0;
@@ -22,6 +24,17 @@ void MLFQ::run() {
     queueToRun->runQueue(currentTime, lastPriorityBoost, priorityBoostInterval);
   }
 }
+
+void MLFQ::downgradeProcess(int currentPriority, Process &process) {
+  int finalQueue = queues.size();
+  if (currentPriority == finalQueue) {
+    queues[currentPriority - 1]->addToQueue(&process);
+  } else {
+    queues[currentPriority]->addToQueue(&process);
+  }
+}
+
+void MLFQ::completeProcess(Process &process) { storeStats(process); }
 
 void MLFQ::priorityBoost() {
   std::vector<Process *> processes = std::vector<Process *>();

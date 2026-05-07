@@ -5,15 +5,19 @@
 
 class MLFQ {
   std::vector<Queue *> queues;
-  void priorityBoost();
   int currentTime;
   int priorityBoostInterval;
   int lastPriorityBoost;
+  std::queue<Process *> ioQueue;
+  void downgradeProcess(int, Process &);
+  void priorityBoost();
+  void addToIoQueue(Process &);
+  void completeProcess(Process &);
 
 public:
   void run();
   void enQueueProcess(Process *);
-  void addQueue(Queue &queue);
+  void addQueue(Queue &);
   MLFQ();
 };
 
