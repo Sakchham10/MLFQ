@@ -1,21 +1,41 @@
 #include "Queue.hpp"
 
-Queue::Queue(int timeSlice, int priority, int maxTimeInQueue) {
+Queue::Queue(int timeSlice, int priority, int maxTimeInQueue,
+             std::function<void(int, Process &)> downgradeProcess,
+             std::function<void()> priorityBoost,
+             std::function<void(Process &)> addToIoQueue,
+             std::function<void(Process &)> completeProcess) {
   this->timeSlice = timeSlice;
   this->priority = priority;
   processToCpuTime = std::map<int, int>();
   processes = std::deque<Process>();
   this->maxTimeInQueue = maxTimeInQueue;
+  this->downgradeProcess = downgradeProcess;
+  this->priorityBoost = priorityBoost;
+  this->addToIoQueue = addToIoQueue;
+  this->completeProcess = completeProcess;
+}
+
+void Queue::removeProcess(Process &process) {
+  processToCpuTime.erase(process.getID());
+  processes.pop_front();
+}
+
+void Queue::tick(int &currentTime) {
+  currentTime++;
+  return;
 }
 
 void Queue::runQueue(int &currentTime, int &lastPriorityBoost,
                      const int priorityBoostPeriod) {
+
   while (!processes.empty()) {
     Process processToRun = processes.front();
     int timeUsedByProcess = processToCpuTime[processToRun.getID()];
     if (timeUsedByProcess == maxTimeInQueue) {
-      processes.pop_front();
-      downgradeProcess(processToRun);
+      removeProcess(processToRun);
+      downgradeProcess(priority, processToRun);
+      return;
     }
     int timeRemainingInQueue =
         std::min(maxTimeInQueue - timeUsedByProcess, timeSlice);
@@ -28,15 +48,16 @@ void Queue::runQueue(int &currentTime, int &lastPriorityBoost,
       if (processToCpuTime[processToRun.getCpuTimeUsed()] < maxTimeInQueue) {
         processes.push_back(processToRun);
       } else {
-        downgradeProcess(processToRun);
+        removeProcess(processToRun);
+        downgradeProcess(priority, processToRun);
       }
       break;
     case ProcessStatus::Blocked:
-      processes.pop_front();
+      removeProcess(processToRun);
       addToIoQueue(processToRun);
       break;
     case ProcessStatus::Completed:
-      processes.pop_front();
+      removeProcess(processToRun);
       completeProcess(processToRun);
       break;
     }
@@ -48,6 +69,7 @@ void Queue::runQueue(int &currentTime, int &lastPriorityBoost,
     if (currentTime - lastPriorityBoost >= priorityBoostPeriod) {
       priorityBoost();
       lastPriorityBoost = currentTime;
+      return;
     }
   }
 }

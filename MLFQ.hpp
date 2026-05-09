@@ -8,11 +8,12 @@ class MLFQ {
   int currentTime;
   int priorityBoostInterval;
   int lastPriorityBoost;
-  std::queue<Process> ioQueue;
+  std::deque<Process> ioQueue;
   void downgradeProcess(int, Process &);
   void priorityBoost();
   void addToIoQueue(Process &);
   void completeProcess(Process &);
+  Process removeFromIoQueue();
 
 public:
   void run();

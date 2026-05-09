@@ -11,6 +11,7 @@ MLFQ::MLFQ() {
   currentTime = 0;
   priorityBoostInterval = 50;
   lastPriorityBoost = 0;
+  ioQueue = std::deque<Process>();
 }
 
 void MLFQ::enQueueProcess(Process &process) {
@@ -53,4 +54,10 @@ void MLFQ::priorityBoost() {
   }
 }
 
-void MLFQ::addToIoQueue(Process &process) { ioQueue.push(process); }
+void MLFQ::addToIoQueue(Process &process) { ioQueue.push_back(process); }
+
+Process MLFQ::removeFromIoQueue() {
+  Process processToRemove = ioQueue.front();
+  ioQueue.pop_front();
+  return processToRemove;
+}
